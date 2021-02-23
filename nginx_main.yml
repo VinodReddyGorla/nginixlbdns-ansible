@@ -1,0 +1,13 @@
+---
+- hosts: nginx
+  user: root
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars_files:
+       - /etc/ansible/roles/nginixlbdns/inputs/inputs.yml
+  any_errors_fatal: true
+  roles:
+
+   - nginixlbdns 
+

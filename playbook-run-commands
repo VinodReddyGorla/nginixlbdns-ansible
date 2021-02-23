@@ -1,0 +1,1 @@
+ansible-playbook /etc/ansible/roles/nginixlbdns/nginx_main.yml -K -e '{"slave_ip1":"192.168.32.201","slave_ip2":"192.168.32.202","interface":"ens33","server_ip1":"192.168.32.85","server_ip2":"192.168.32.49","virtual_ip":"192.168.32.200","priority1":"101","priority2":"100"}'

@@ -1,0 +1,53 @@
+vrrp_script chk_nginx {
+       script "pidof  nginx"
+       interval 2
+ #      weight 2
+}
+vrrp_instance dns_test {
+        interface {{ interface }}
+        state MASTER
+        virtual_router_id 51
+        priority id
+        unicast_src_ip {{ server_ip1 }}
+unicast_peer {
+{{ server_ip2 }}
+}
+        authentication {
+                auth_type PASS
+                auth_pass A3d4s98c1j5k3d5h5
+        }
+        virtual_ipaddress {
+                {{ virtual_ip }} dev {{ interface }}
+        }
+        track_script {
+       chk_nginx
+   }
+}
+
+# Check for UDP
+virtual_server {{ virtual_ip }} 53 {
+  delay_loop 6
+  lb_algo wlc
+  protocol UDP
+
+  real_server server_ip 53 {
+    weight 100
+    UDP_CHECK {
+      connect_timeout 6
+    }
+  }
+}
+
+# Check for TCP
+virtual_server {{ virtual_ip }} 53 {
+  delay_loop 6
+  lb_algo wlc
+  protocol TCP
+
+  real_server server_ip  53 {
+    weight 100
+    TCP_CHECK {
+      connect_timeout 6
+    }
+  }
+}

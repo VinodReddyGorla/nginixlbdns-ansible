@@ -1,0 +1,52 @@
+---
+- name: installing keepalived package in both nginx servers
+  yum:
+    name: keepalived
+    state: latest
+
+
+- name: setting the keepalived.conf
+  template:
+        src: keepalived.conf.j2
+        dest: /etc/keepalived/keepalived.conf
+        force: yes
+
+
+- name: setting priority in nginx_server2
+  replace:
+     path: /etc/keepalived/keepalived.conf
+     regexp: priority id
+     replace: priority {{ priority1 }}
+  when: (hostvars[inventory_hostname]['ansible_default_ipv4']['address']) == server_ip1
+
+
+- name: setting priority in nginx_server2
+  replace:
+     path: /etc/keepalived/keepalived.conf
+     regexp: priority id
+     replace: priority {{ priority2 }}
+  when: (hostvars[inventory_hostname]['ansible_default_ipv4']['address']) == server_ip2
+
+
+- name: setting real server ip n=in nginx_server1
+  replace:
+     path: /etc/keepalived/keepalived.conf
+     regexp:   real_server server_ip
+     replace:  real_server {{ server_ip1 }}
+  when: (hostvars[inventory_hostname]['ansible_default_ipv4']['address']) == server_ip1
+
+
+- name: setting realserverip in nginx_server2
+  replace:
+     path: /etc/keepalived/keepalived.conf
+     regexp: real_server server_ip
+     replace: real_server {{ server_ip2 }}
+  when: (hostvars[inventory_hostname]['ansible_default_ipv4']['address']) == server_ip2
+
+
+- name: starting and enebling keepalived service...
+  service:
+        name: keepalived
+        state: started
+        enabled: yes
+
